@@ -1,18 +1,36 @@
-FROM node:20.18.0-alpine3.20
-EXPOSE 8080
-RUN echo "Hello world"
-RUN echo "Hello Docker"
-ENV DB_HOST="mysql"
-RUN addgroup -S expense && adduser -S expense -G expense
-RUN mkdir /opt/server
-RUN chown -R expense:expense /opt/server
+FROM node:20 AS builder
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
 RUN npm install
+
+
+FROM node:20.18.0-alpine3.20
+EXPOSE 8080
+ENV DB_HOST="mysql"
+RUN addgroup -S expense && adduser -S expense -G expense && \
+    mkdir /opt/server && \
+    chown -R expense:expense /opt/server
+WORKDIR /opt/server
+COPY --from=builder /opt/server /opt/server
 USER expense
-EXPOSE 8081
 CMD ["node", "index.js"]
+
+
+
+# after some best practices, alpine image , run as non root user, user add expense
+# FROM node:20.18.0-alpine3.20
+# EXPOSE 8080
+# ENV DB_HOST="mysql"
+# RUN addgroup -S expense && adduser -S expense -G expense
+# RUN mkdir /opt/server
+# RUN chown -R expense:expense /opt/server
+# WORKDIR /opt/server
+# COPY package.json .
+# COPY *.js .
+# RUN npm install
+# USER expense
+# CMD ["node", "index.js"]
 
 
 
