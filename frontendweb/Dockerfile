@@ -1,4 +1,4 @@
-FROM supraspace/frontend:v1
+FROM nginx
 ADD file:90b9dd8f12120e8b2cd3ece45fcbe8af67e40565e2032a40f64bd921c43e2ce7 in /
 CMD ["bash"]
 RUN LABEL maintainer=NGINX Docker Maintainers <docker-maint@nginx.com>
